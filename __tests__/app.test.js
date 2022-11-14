@@ -4,9 +4,7 @@ const db = require('../db/connection');
 const testData = require('../db/data/test-data/index')
 const seed = require('../db/seeds/seed')
 beforeEach(() => seed( testData ));
-afterAll(() => {
-    if (db.end) db.end();
-  });
+afterAll(() => db.end());
 
 
 describe('GET /api/topics' , () => {
