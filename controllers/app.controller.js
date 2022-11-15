@@ -1,6 +1,6 @@
 const express = require("express");
 const articles = require("../db/data/test-data/articles");
-const { fetchTopics, fetchArticles, fetchArticleById, insertCommentByArticleId } = require("../models/app.model");
+const { fetchTopics, fetchArticles, fetchArticleById, insertCommentByArticleId, fetchCommentsByArticleId } = require("../models/app.model");
 
 exports.getTopics = (req, res, next) => {
     fetchTopics().then((topics) => {
@@ -22,7 +22,6 @@ exports.getArticles = (req, res, next) => {
 
 exports.getArticleById = (req, res, next) => {
     const articleId = req.params.article_id
-
         fetchArticleById(articleId).then((article) => {
            res.status(200).send({article})
         })
@@ -31,12 +30,31 @@ exports.getArticleById = (req, res, next) => {
         })
     }
 
-// ticket 6 goes here
+exports.getCommentsByArticleId = (req, res, next) => {
+    const article_id = req.params.article_id
+    const promise1 = fetchArticleById(article_id)
+    const promise2 = fetchCommentsByArticleId(article_id)
+    
+    Promise.all([promise1 , promise2])
+    .then((results) => {
+        let comments = results[1]
+        res.status(200).send({comments})
+    }).catch((err)=> {
+        next(err)
+    })
+}
+
 
 exports.postCommentByArticleId = (req, res, next) => {
     const articleId = req.params.article_id
     const newComment = req.body
-    insertCommentByArticleId(articleId, newComment).then((comment) => {
+    const promise1 = fetchArticleById(articleId)
+    const promise2 = insertCommentByArticleId(articleId, newComment)
+
+    Promise.all([promise1,promise2]).then((results) => {
+        const comment = results[1]
         res.status(201).send({comment})
+    }).catch((err) => {
+        next(err)
     })
 }

@@ -1,3 +1,4 @@
+const { checkArticleExists } = require('../db/apputils')
 const db = require('../db/connection')
 const articles = require('../db/data/test-data/articles')
 
@@ -35,13 +36,21 @@ exports.fetchArticleById = (articleId) => {
    })
 }
 
+exports.fetchCommentsByArticleId = (article_id) => {
+        const queryString = `
+        SELECT comment_id, votes, created_at, author, body FROM comments
+        WHERE article_id = $1
+        `
+        return db.query(queryString, [article_id])
+    .then((comments) => {
+        return comments.rows
+    })
+}
+
 //ticket 6 goes here
 
 exports.insertCommentByArticleId = (articleId, {username, body}) => {
- return this.fetchArticleById(articleId).then(()=> {
-    console.log('here')
- })
-
+ 
 const queryString = `
 INSERT INTO comments
 (article_id, author, body)

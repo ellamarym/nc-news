@@ -96,9 +96,51 @@ describe('GET /api/articles/:article_id', () => {
   })
 })
 
-//ticket 6 tests here
+describe('GET/api/articles/:article_id/comments', ()=> {
+  test('200 - returns with array of comments for the given article', () => {
+    return request(app)
+    .get('/api/articles/1/comments')
+    .expect(200)
+    .then(({body})=> {
+      expect(body.comments.length).toBeGreaterThan(0)
+      body.comments.forEach((comment) => {
+        expect(comment).toMatchObject({
+          comment_id: expect.any(Number),
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String)
+        })
+      })
+    })
+  });
+  test('404 - valid but non-existent article id', () => {
+    return request(app)
+    .get('/api/articles/300/comments')
+    .expect(404)
+    .then(({body})=> {
+      expect(body.msg).toBe('article not found')
+    })
+  })
+  test('200 - returns with empty array when given article has no comments', () => {
+    return request(app)
+    .get('/api/articles/2/comments')
+    .expect(200)
+    .then(({body})=> {
+      expect(body.comments).toEqual([])
+    })
+  })
+  test('400 - invalid article id', () => {
+    return request(app)
+    .get('/api/articles/invalidId/comments')
+    .expect(400)
+    .then(({body})=> {
+      expect(body.msg).toBe('bad request')
+    })
+  });
+})
 
-describe.skip ('POST /api/articles/:article_id/comments', () => {
+describe ('POST /api/articles/:article_id/comments', () => {
   test('201 - new comment added to table', () => {
     const newComment = {
       username: 'butter_bridge',
@@ -122,13 +164,26 @@ describe.skip ('POST /api/articles/:article_id/comments', () => {
   test('404 - article id valid but non-existent', () => {
     const newComment = {
       username: 'butter_bridge',
-      body: "this article is a big pile of poo"
+      body: "this article is a big pile of poo"}
+      return request(app)
       .post('/api/articles/2050/comments')
     .send(newComment)
     .expect(404)
     .then(({body}) => {
       expect(body.msg).toBe('article not found')
     })
-    }
+    })
+    test('400 - not a valid article id', () => {
+      const newComment = {
+        username: 'butter_bridge',
+        body: "this article is a big pile of poo"}
+        return request(app)
+        .post('/api/articles/invalid/comments')
+      .send(newComment)
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe('bad request')
+      })
+    })
+    
   });
-})
