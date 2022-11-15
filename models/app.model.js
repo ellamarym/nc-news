@@ -34,3 +34,12 @@ exports.fetchArticleById = (articleId) => {
     return article.rows[0]
    })
 }
+
+//ticket 6 goes here
+
+exports.insertCommentByArticleId = (articleId, {username, body}) => {
+const queryString = `
+INSERT INTO comments
+()
+`
+}

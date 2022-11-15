@@ -95,3 +95,27 @@ describe('GET /api/articles/:article_id', () => {
     })
   })
 })
+
+//ticket 6 tests here
+
+describe ('POST /api/articles/:article_id/comments', () => {
+  test('201 - new comment added to table', () => {
+    const newComment = {
+      username: 'butter_bridge',
+      body: "this article is a big pile of poo"
+    }
+    return request(app)
+    .post('/api/articles/1/comments')
+    .send(newComment)
+    .expect(201)
+    .then(({body}) => {
+      expect(body.comment).toEqual({
+        comment_id: 19,
+        article_id: 1, 
+        created_at: expect.any(String),
+        votes: expect.any(Number),
+        ...newComment
+      })
+    })
+  });
+})
