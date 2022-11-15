@@ -119,7 +119,7 @@ describe('GET/api/articles/:article_id/comments', ()=> {
     .get('/api/articles/300/comments')
     .expect(404)
     .then(({body})=> {
-      expect(body.msg).toBe('no article with this id')
+      expect(body.msg).toBe('article not found')
     })
   })
   test('200 - returns with empty array when given article has no comments', () => {
