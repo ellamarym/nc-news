@@ -99,7 +99,7 @@ describe('GET /api/articles/:article_id', () => {
 //ticket 6 tests here
 
 describe ('POST /api/articles/:article_id/comments', () => {
-  test('201 - new comment added to table', () => {
+  xtest('201 - new comment added to table', () => {
     const newComment = {
       username: 'butter_bridge',
       body: "this article is a big pile of poo"
