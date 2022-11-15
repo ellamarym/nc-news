@@ -86,12 +86,56 @@ describe('GET /api/articles/:article_id', () => {
       expect(body.msg).toBe('article not found')
     })
   });
-  // test('400 - invalid article id', () => {
-  //   return request(app)
-  //   .get('/api/articles/notValidId')
-  //   .expect(400)
-  //   .then(({body})=> {
-  //     expect(body.msg).toBe('not a valid article ID')
-  //   })
-  // })
+  xtest('400 - invalid article id', () => {
+    return request(app)
+    .get('/api/articles/notValidId')
+    .expect(400)
+    .then(({body})=> {
+      expect(body.msg).toBe('not a valid article ID')
+    })
+  })
+})
+
+describe('GET/api/articles/:article_id/comments', ()=> {
+  test('200 - returns with array of comments for the given article', () => {
+    return request(app)
+    .get('/api/articles/1/comments')
+    .expect(200)
+    .then(({body})=> {
+      expect(body.comments.length).toBeGreaterThan(0)
+      body.comments.forEach((comment) => {
+        expect(comment).toMatchObject({
+          comment_id: expect.any(Number),
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String)
+        })
+      })
+    })
+  });
+  test('404 - valid but non-existent article id', () => {
+    return request(app)
+    .get('/api/articles/300/comments')
+    .expect(404)
+    .then(({body})=> {
+      expect(body.msg).toBe('no article with this id')
+    })
+  })
+  test('200 - returns with empty array when given article has no comments', () => {
+    return request(app)
+    .get('/api/articles/2/comments')
+    .expect(200)
+    .then(({body})=> {
+      expect(body.comments).toEqual([])
+    })
+  })
+  test('400 - invalid article id', () => {
+    return request(app)
+    .get('/api/articles/invalidId/comments')
+    .expect(400)
+    .then(({body})=> {
+      expect(body.msg).toBe('not a valid article ID')
+    })
+  });
 })

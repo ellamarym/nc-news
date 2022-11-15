@@ -1,6 +1,6 @@
 const express = require("express");
 const articles = require("../db/data/test-data/articles");
-const { fetchTopics, fetchArticles, fetchArticleById } = require("../models/app.model");
+const { fetchTopics, fetchArticles, fetchArticleById, fetchCommentsByArticleId } = require("../models/app.model");
 
 exports.getTopics = (req, res, next) => {
     fetchTopics().then((topics) => {
@@ -27,6 +27,18 @@ exports.getArticleById = (req, res, next) => {
        res.status(200).send({article})
     })
     .catch((err) => {
+        next(err)
+    })
+}
+
+exports.getCommentsByArticleId = (req, res, next) => {
+    const article_id = req.params.article_id
+    if(!parseInt(article_id)){
+        res.status(400).send({msg : 'not a valid article ID'})
+    }
+    fetchCommentsByArticleId(article_id).then((comments) => {
+        res.status(200).send({comments})
+    }).catch((err)=> {
         next(err)
     })
 }
