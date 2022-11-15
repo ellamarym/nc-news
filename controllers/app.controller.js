@@ -21,12 +21,15 @@ exports.getArticles = (req, res, next) => {
 }
 
 exports.getArticleById = (req, res, next) => {
-    const articleId = parseInt(req.params.article_id)
-    
-    fetchArticleById(articleId).then((article) => {
-       res.status(200).send({article})
-    })
-    .catch((err) => {
-        next(err)
-    })
+    const articleId = req.params.article_id
+    if(!parseInt(articleId)) {
+        res.status(400).send({msg : 'not a valid article ID'})
+    } else {
+        fetchArticleById(articleId).then((article) => {
+           res.status(200).send({article})
+        })
+        .catch((err) => {
+            next(err)
+        })
+    }
 }
