@@ -32,7 +32,12 @@ exports.getArticleById = (req, res, next) => {
 
 exports.getCommentsByArticleId = (req, res, next) => {
     const article_id = req.params.article_id
-    fetchCommentsByArticleId(article_id).then((comments) => {
+    const promise1 = fetchArticleById(article_id)
+    const promise2 = fetchCommentsByArticleId(article_id)
+    
+    Promise.all([promise1 , promise2])
+    .then((results) => {
+        let comments = results[1]
         res.status(200).send({comments})
     }).catch((err)=> {
         next(err)

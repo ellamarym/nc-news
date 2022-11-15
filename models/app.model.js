@@ -37,14 +37,12 @@ exports.fetchArticleById = (articleId) => {
 }
 
 exports.fetchCommentsByArticleId = (article_id) => {
-    return this.fetchArticleById(article_id).then(()=> {
-
         const queryString = `
         SELECT comment_id, votes, created_at, author, body FROM comments
         WHERE article_id = $1
         `
         return db.query(queryString, [article_id])
-    }).then((comments) => {
+    .then((comments) => {
         return comments.rows
     })
 }
