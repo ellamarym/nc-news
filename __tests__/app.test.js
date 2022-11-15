@@ -86,12 +86,12 @@ describe('GET /api/articles/:article_id', () => {
       expect(body.msg).toBe('article not found')
     })
   });
-  xtest('400 - invalid article id', () => {
+  test('400 - invalid article id', () => {
     return request(app)
     .get('/api/articles/notValidId')
     .expect(400)
     .then(({body})=> {
-      expect(body.msg).toBe('not a valid article ID')
+      expect(body.msg).toBe('bad request')
     })
   })
 })
@@ -135,7 +135,7 @@ describe('GET/api/articles/:article_id/comments', ()=> {
     .get('/api/articles/invalidId/comments')
     .expect(400)
     .then(({body})=> {
-      expect(body.msg).toBe('not a valid article ID')
+      expect(body.msg).toBe('bad request')
     })
   });
 })
