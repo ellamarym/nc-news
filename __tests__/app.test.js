@@ -98,8 +98,8 @@ describe('GET /api/articles/:article_id', () => {
 
 //ticket 6 tests here
 
-describe ('POST /api/articles/:article_id/comments', () => {
-  xtest('201 - new comment added to table', () => {
+describe.skip ('POST /api/articles/:article_id/comments', () => {
+  test('201 - new comment added to table', () => {
     const newComment = {
       username: 'butter_bridge',
       body: "this article is a big pile of poo"
@@ -114,8 +114,21 @@ describe ('POST /api/articles/:article_id/comments', () => {
         article_id: 1, 
         created_at: expect.any(String),
         votes: expect.any(Number),
-        ...newComment
+        author: 'butter_bridge',
+        body: "this article is a big pile of poo"
       })
     })
+  });
+  test('404 - article id valid but non-existent', () => {
+    const newComment = {
+      username: 'butter_bridge',
+      body: "this article is a big pile of poo"
+      .post('/api/articles/2050/comments')
+    .send(newComment)
+    .expect(404)
+    .then(({body}) => {
+      expect(body.msg).toBe('article not found')
+    })
+    }
   });
 })

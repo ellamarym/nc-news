@@ -38,8 +38,19 @@ exports.fetchArticleById = (articleId) => {
 //ticket 6 goes here
 
 exports.insertCommentByArticleId = (articleId, {username, body}) => {
+ return this.fetchArticleById(articleId).then(()=> {
+    console.log('here')
+ })
+
 const queryString = `
 INSERT INTO comments
-()
+(article_id, author, body)
+VALUES
+($1, $2, $3)
+RETURNING *
 `
+return db.query(queryString, [articleId, username, body]).then((comment) => {
+    
+    return comment.rows[0]
+})
 }
