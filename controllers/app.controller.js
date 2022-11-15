@@ -21,15 +21,15 @@ exports.getArticles = (req, res, next) => {
 }
 
 exports.getArticleById = (req, res, next) => {
-    const articleId = parseInt(req.params.article_id)
-    
-    fetchArticleById(articleId).then((article) => {
-       res.status(200).send({article})
-    })
-    .catch((err) => {
-        next(err)
-    })
-}
+    const articleId = req.params.article_id
+
+        fetchArticleById(articleId).then((article) => {
+           res.status(200).send({article})
+        })
+        .catch((err) => {
+            next(err)
+        })
+    }
 
 exports.getCommentsByArticleId = (req, res, next) => {
     const article_id = req.params.article_id
@@ -42,3 +42,4 @@ exports.getCommentsByArticleId = (req, res, next) => {
         next(err)
     })
 }
+
