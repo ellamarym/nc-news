@@ -32,3 +32,31 @@ describe('GET /api/topics' , () => {
     });
 })
 
+describe('GET /api/articles', () => {
+  test('responds with an array of objects, with author, title, article-id, topic, created-at, votes, and comment count keys', () => {
+    return request(app)
+    .get('/api/articles')
+    .expect(200)
+    .then(({body}) => {
+      body.articles.forEach((article) => {
+        expect(article).toMatchObject({
+          author: expect.any(String),
+          title: expect.any(String),
+          article_id: expect.any(Number),
+          topic: expect.any(String),
+          votes: expect.any(Number),
+          comment_count: expect.any(Number)
+        })
+      })
+    })
+  });
+  test('objects are sorted by date in descending order', () => {
+    return request(app)
+    .get('/api/articles')
+    .expect(200)
+    .then(({body}) => {
+      expect(body.articles).toBeSortedBy('created_at', {descending : true})
+    })
+  });
+  
+})
