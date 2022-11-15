@@ -1,3 +1,4 @@
+const { checkArticleExists } = require('../db/apputils')
 const db = require('../db/connection')
 const articles = require('../db/data/test-data/articles')
 
@@ -33,4 +34,15 @@ exports.fetchArticleById = (articleId) => {
     }
     return article.rows[0]
    })
+}
+
+exports.fetchCommentsByArticleId = (article_id) => {
+        const queryString = `
+        SELECT comment_id, votes, created_at, author, body FROM comments
+        WHERE article_id = $1
+        `
+        return db.query(queryString, [article_id])
+    .then((comments) => {
+        return comments.rows
+    })
 }
