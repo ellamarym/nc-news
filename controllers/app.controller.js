@@ -1,6 +1,6 @@
 const express = require("express");
 const articles = require("../db/data/test-data/articles");
-const { fetchTopics, fetchArticles, fetchArticleById, fetchCommentsByArticleId } = require("../models/app.model");
+const { fetchTopics, fetchArticles, fetchArticleById, fetchCommentsByArticleId, changeArticleById } = require("../models/app.model");
 
 exports.getTopics = (req, res, next) => {
     fetchTopics().then((topics) => {
@@ -44,3 +44,13 @@ exports.getCommentsByArticleId = (req, res, next) => {
     })
 }
 
+//ticket 7 goes here 
+
+exports.patchArticleById = (req,res,next) => {
+    const articleId = req.params.article_id
+    const voteChange = req.body.inc_votes
+    
+changeArticleById(articleId,voteChange).then((article)=> {
+    res.status(201).send({article})
+})
+} 

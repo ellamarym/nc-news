@@ -46,3 +46,11 @@ exports.fetchCommentsByArticleId = (article_id) => {
         return comments.rows
     })
 }
+
+//ticket 7 goes here
+
+exports.changeArticleById = (articleId, voteChange) => {
+const queryString = `
+`
+
+}

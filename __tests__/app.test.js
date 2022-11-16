@@ -3,6 +3,7 @@ const app = require('../app');
 const db = require('../db/connection');
 const testData = require('../db/data/test-data/index')
 const seed = require('../db/seeds/seed')
+
 beforeEach(() => seed( testData ));
 afterAll(() => db.end());
 
@@ -142,9 +143,22 @@ describe('GET/api/articles/:article_id/comments', ()=> {
 
 //ticket 7 tests here 
 
-// describe('8. PATCH /api/articles/:article_id', () =>{
-//   const voteChange = {inc_votes: 100}
-//   return request(app)
-//   .patch('/api/articles/1')
-//   .send(voteChange)
-// })
+describe('8. PATCH /api/articles/:article_id', () =>{
+ xtest('201 - positive vote change adds votes to count', () => {
+    return request(app)
+    .patch('/api/articles/1')
+    .send({inc_votes : 100})
+    .expect(201)
+    .then(({body}) => {
+      expect(body.article).toMatchObject({
+        title: "Living in the shadow of a great man",
+        topic: "mitch",
+        author: "butter_bridge",
+        body: "I find this existence challenging",
+        created_at: 1594329060000,
+        votes: 200,
+        article_id: 1
+      })
+    })
+ });
+})
