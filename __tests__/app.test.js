@@ -279,7 +279,7 @@ test('400 - invalid article id', () => {
     expect(body.msg).toBe('bad request')
   })
 })
-test('400 - invalid vote input', () => {
+xtest('400 - invalid vote input', () => {
   return request(app)
   .patch('/api/articles/1')
   .send({inc_votes: 'banana'})
@@ -299,10 +299,28 @@ test('422 - input invalid due to mispelling of key', () => {
 })
 })
 
-//ticket 9
+describe(' GET /api/users', () => {
+    test('200 - returns with an array of users', () => {
+      return request(app)
+      .get('/api/users')
+      .expect(200)
+      .then(({body}) => {
+        expect(body.users.length).toBeGreaterThan(0)
+        body.users.forEach((user) => {
+          expect(user).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String)
+          })
+        })
+      })
+    });
+  })
+
+
 
 describe('10. GET /api/articles (queries)', () => {
-  xtest('200 - topic query added and returned articles match this topic', () => {
+  test('200 - topic query added and returned articles match this topic', () => {
     return request(app)
     .get('/api/articles?topic=cats')
     .expect(200)
@@ -313,10 +331,10 @@ describe('10. GET /api/articles (queries)', () => {
           title: expect.any(String),
           topic: "cats",
           author: expect.any(String),
-          body: expect.any(String),
           created_at: expect.any(String),
           votes: expect.any(Number),
-          article_id: expect.any(Number)
+          article_id: expect.any(Number),
+          comment_count: expect.any(Number)
         })
       })
     })

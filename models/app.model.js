@@ -10,15 +10,20 @@ exports.fetchTopics = () => {
     })
 }
 
-exports.fetchArticles = () => {
-    return db.query(`
+exports.fetchArticles = (topic) => {
+    const queryValues = []
+    let queryString = `
     SELECT title, topic, articles.author, articles.article_id, articles.created_at, articles.votes, CAST(COUNT(comments.article_id) AS int) AS comment_count
     FROM articles
     LEFT JOIN comments ON comments.article_id = articles.article_id
-    GROUP BY articles.article_id
-    ORDER BY articles.created_at DESC
-    ;
-    `).then((articles)=> {
+    `
+    if(topic) { 
+        queryString += ' WHERE topic = $1'
+        queryValues.push(topic)
+        }
+    queryString += ' GROUP BY articles.article_id ORDER BY articles.created_at DESC'
+        console.log(queryString)
+    return db.query(queryString, queryValues).then((articles)=> {
         return articles.rows
     })
 }
@@ -73,4 +78,12 @@ exports.changeArticleById = (articleId, voteChange) => {
     return article.rows[0]
 })
 
+}
+
+exports.fetchUsers = () => {
+    return db.query(`
+    SELECT * FROM users;
+    `).then((users) => {
+        return users.rows
+    })
 }
