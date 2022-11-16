@@ -185,5 +185,16 @@ describe ('POST /api/articles/:article_id/comments', () => {
         expect(body.msg).toBe('bad request')
       })
     })
-    
+    test('401 - not a valid username', () => {
+      const newComment = {
+        username: 'margarine_bridge',
+        body: "this article is a big pile of poo"}
+        return request(app)
+        .post('/api/articles/1/comments')
+      .send(newComment)
+      .expect(401)
+      .then(({body}) => {
+        expect(body.msg).toBe('invalid username')
+      })
+    })
   });
