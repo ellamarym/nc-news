@@ -1,3 +1,4 @@
+const e = require("express");
 const express = require("express");
 const { getTopics, getArticles, getArticleById, getCommentsByArticleId, patchArticleById } = require("./controllers/app.controller");
 const app = express();
@@ -20,6 +21,14 @@ app.use((err, req, res, next)=> {
         res.status(400).send({msg: 'bad request'})
     } else {
         next(err);
+    }
+})
+
+app.use((err,req,res,next) => {
+    if(err.code ==='23502') {
+        res.status(422).send({msg: 'invalid user input'})
+    } else {
+        next(err)
     }
 })
 

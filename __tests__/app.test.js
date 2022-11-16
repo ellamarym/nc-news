@@ -196,12 +196,21 @@ test('400 - invalid article id', () => {
     expect(body.msg).toBe('bad request')
   })
 })
-xtest('422 - invalid user input', () => {
+test('400 - invalid vote input', () => {
   return request(app)
-  .patch('/api/article/invalid')
+  .patch('/api/articles/1')
   .send({inc_votes: 'banana'})
-  .expect(422)
+  .expect(400)
   .then(({body}) => {
+    expect(body.msg).toBe('bad request')
+  })
+})
+test('422 - input invalid due to mispelling of key', () => {
+  return request(app)
+  .patch('/api/articles/1')
+  .send({inc_voters: 5})
+  .expect(422)
+  .then(({body})=> {
     expect(body.msg).toBe('invalid user input')
   })
 })
