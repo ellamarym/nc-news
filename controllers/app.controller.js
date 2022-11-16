@@ -49,8 +49,14 @@ exports.getCommentsByArticleId = (req, res, next) => {
 exports.patchArticleById = (req,res,next) => {
     const articleId = req.params.article_id
     const voteChange = req.body.inc_votes
-    
-changeArticleById(articleId,voteChange).then((article)=> {
-    res.status(201).send({article})
-})
+
+    const promise1 = fetchArticleById(articleId)
+    const promise2 = changeArticleById(articleId, voteChange)
+
+    Promise.all([promise1, promise2]).then((results)=> {
+        const article = results[1]
+        res.status(201).send({article})
+    }).catch((err) => {
+        next(err)
+    })
 } 

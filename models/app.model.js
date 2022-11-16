@@ -50,11 +50,14 @@ exports.fetchCommentsByArticleId = (article_id) => {
 //ticket 7 goes here
 
 exports.changeArticleById = (articleId, voteChange) => {
-const queryString = `
-UPDATE articles
-SET votes = votes + $1
-WHERE article_id = $2
-RETURNING *
-`
+    const queryString = `
+    UPDATE articles
+    SET votes = votes + $1
+    WHERE article_id = $2
+    RETURNING *
+    `
+    return db.query(queryString, [voteChange, articleId]).then((article) => {
+    return article.rows[0]
+})
 
 }
