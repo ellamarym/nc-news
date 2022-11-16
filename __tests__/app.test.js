@@ -141,7 +141,90 @@ describe('GET/api/articles/:article_id/comments', ()=> {
   });
 })
 
-//ticket 7 tests here 
+describe ('POST /api/articles/:article_id/comments', () => {
+  test('201 - new comment added to table', () => {
+    const newComment = {
+      username: 'butter_bridge',
+      body: "this article is a big pile of poo"
+    }
+    return request(app)
+    .post('/api/articles/1/comments')
+    .send(newComment)
+    .expect(201)
+    .then(({body}) => {
+      expect(body.comment).toEqual({
+        comment_id: 19,
+        article_id: 1, 
+        created_at: expect.any(String),
+        votes: expect.any(Number),
+        author: 'butter_bridge',
+        body: "this article is a big pile of poo"
+      })
+    })
+  });
+  test('404 - article id valid but non-existent', () => {
+    const newComment = {
+      username: 'butter_bridge',
+      body: "this article is a big pile of poo"}
+      return request(app)
+      .post('/api/articles/2050/comments')
+    .send(newComment)
+    .expect(404)
+    .then(({body}) => {
+      expect(body.msg).toBe('article not found')
+    })
+    })
+    test('400 - not a valid article id', () => {
+      const newComment = {
+        username: 'butter_bridge',
+        body: "this article is a big pile of poo"}
+        return request(app)
+        .post('/api/articles/invalid/comments')
+      .send(newComment)
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe('bad request')
+      })
+    })
+    test('401 - not a valid username', () => {
+      const newComment = {
+        username: 'margarine_bridge',
+        body: "this article is a big pile of poo"}
+        return request(app)
+        .post('/api/articles/1/comments')
+      .send(newComment)
+      .expect(401)
+      .then(({body}) => {
+        expect(body.msg).toBe('invalid username')
+      })
+    })
+    test('422 - comment input invalid due to mispelling of username key', () => {
+      const newComment = {
+        name: 'margarine_bridge',
+        body: "this article is a big pile of poo"}
+        return request(app)
+        .post('/api/articles/1/comments')
+      .send(newComment)
+      .expect(422)
+      .then(({body}) => {
+        expect(body.msg).toBe('invalid user input')
+      })
+    })
+    test('422 - comment input invalid due to mispelling of body key', () => {
+      const newComment = {
+        username: 'margarine_bridge',
+        bodii: "this article is a big pile of poo"}
+        return request(app)
+        .post('/api/articles/1/comments')
+      .send(newComment)
+      .expect(422)
+      .then(({body}) => {
+        expect(body.msg).toBe('invalid user input')
+      })
+    })
+  });
+
+
 
 describe('8. PATCH /api/articles/:article_id', () =>{
  test('201 - positive vote change adds votes to count', () => {
