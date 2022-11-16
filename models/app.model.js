@@ -46,3 +46,20 @@ exports.fetchCommentsByArticleId = (article_id) => {
         return comments.rows
     })
 }
+
+//ticket 6 goes here
+
+exports.insertCommentByArticleId = (articleId, {username, body}) => {
+ 
+const queryString = `
+INSERT INTO comments
+(article_id, author, body)
+VALUES
+($1, $2, $3)
+RETURNING *
+`
+return db.query(queryString, [articleId, username, body]).then((comment) => {
+    
+    return comment.rows[0]
+})
+}

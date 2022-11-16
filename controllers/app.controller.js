@@ -1,6 +1,6 @@
 const express = require("express");
 const articles = require("../db/data/test-data/articles");
-const { fetchTopics, fetchArticles, fetchArticleById, fetchCommentsByArticleId } = require("../models/app.model");
+const { fetchTopics, fetchArticles, fetchArticleById, insertCommentByArticleId, fetchCommentsByArticleId } = require("../models/app.model");
 
 exports.getTopics = (req, res, next) => {
     fetchTopics().then((topics) => {
@@ -44,3 +44,17 @@ exports.getCommentsByArticleId = (req, res, next) => {
     })
 }
 
+
+exports.postCommentByArticleId = (req, res, next) => {
+    const articleId = req.params.article_id
+    const newComment = req.body
+    const promise1 = fetchArticleById(articleId)
+    const promise2 = insertCommentByArticleId(articleId, newComment)
+
+    Promise.all([promise1,promise2]).then((results) => {
+        const comment = results[1]
+        res.status(201).send({comment})
+    }).catch((err) => {
+        next(err)
+    })
+}
