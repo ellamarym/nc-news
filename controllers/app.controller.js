@@ -68,7 +68,7 @@ exports.patchArticleById = (req,res,next) => {
 
     Promise.all([promise1, promise2]).then((results)=> {
         const article = results[1]
-        res.status(201).send({article})
+        res.status(200).send({article})
     }).catch((err) => {
         next(err)
     })
