@@ -197,4 +197,28 @@ describe ('POST /api/articles/:article_id/comments', () => {
         expect(body.msg).toBe('invalid username')
       })
     })
+    test('422 - comment input invalid due to mispelling of username key', () => {
+      const newComment = {
+        name: 'margarine_bridge',
+        body: "this article is a big pile of poo"}
+        return request(app)
+        .post('/api/articles/1/comments')
+      .send(newComment)
+      .expect(422)
+      .then(({body}) => {
+        expect(body.msg).toBe('invalid user input')
+      })
+    })
+    test('422 - comment input invalid due to mispelling of body key', () => {
+      const newComment = {
+        username: 'margarine_bridge',
+        bodii: "this article is a big pile of poo"}
+        return request(app)
+        .post('/api/articles/1/comments')
+      .send(newComment)
+      .expect(422)
+      .then(({body}) => {
+        expect(body.msg).toBe('invalid user input')
+      })
+    })
   });

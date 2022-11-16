@@ -29,6 +29,14 @@ app.use((err,req,res,next)=> {
     }
 })
 
+app.use((err,req,res,next) => {
+    if(err.code === '23502') {
+        res.status(422).send({msg: 'invalid user input'})
+    } else {
+        next(err)
+    }
+})
+
 
 app.use((err, req, res, next) => {
     if (err.status && err.msg) {
