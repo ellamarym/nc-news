@@ -1,3 +1,4 @@
+const e = require("express");
 const request = require("supertest");
 const app = require('../app');
 const db = require('../db/connection');
@@ -279,7 +280,7 @@ test('400 - invalid article id', () => {
     expect(body.msg).toBe('bad request')
   })
 })
-xtest('400 - invalid vote input', () => {
+test('400 - invalid vote input', () => {
   return request(app)
   .patch('/api/articles/1')
   .send({inc_votes: 'banana'})
@@ -337,6 +338,75 @@ describe('10. GET /api/articles (queries)', () => {
           comment_count: expect.any(Number)
         })
       })
+    })
+  });
+  test('404 - valid but non-existent topic', () => {
+    return request(app)
+    .get('/api/articles?topic=bums')
+    .expect(404)
+    .then(({body})=> {
+      expect(body.msg).toBe('topic not found')
+    })
+  })
+  test('200 - no articles with given topic', () => {
+    return request(app)
+    .get('/api/articles?topic=paper')
+    .expect(200)
+    .then(({body})=> {
+      expect(body.articles).toEqual([])
+    })
+  })
+  test('200 - sorts by by given column, defaulting to descending ', () => {
+    return request(app)
+    .get('/api/articles?sortby=author')
+    .expect(200)
+    .then(({body})=> {
+      expect(body.articles.length).toBeGreaterThan(0)
+      expect(body.articles).toBeSortedBy('author', {descending: true})
+    })
+  })
+  test('200 - order given and sorts by that' , () => {
+    return request(app)
+    .get('/api/articles?order=asc')
+    .expect(200)
+    .then(({body}) => {
+      expect(body.articles.length).toBeGreaterThan(0)
+      expect(body.articles).toBeSortedBy('created_at')
+    })
+  })
+  test('200 - query supermix - multiple queries working together', () => {
+    return request(app)
+    .get('/api/articles?topic=mitch&sortby=title&order=asc')
+    .expect(200)
+    .then(({body})=> {
+      expect(body.articles).toBeSortedBy('title')
+      body.articles.forEach((article) => {
+        expect(article).toMatchObject({
+          title: expect.any(String),
+          topic: "mitch",
+          author: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          article_id: expect.any(Number),
+          comment_count: expect.any(Number)
+        })
+      })
+    })
+  })
+  test('400 - invalid sort query', () => {
+    return request(app)
+    .get('/api/articles?sortby=lemons')
+    .expect(400)
+    .then(({body})=> {
+      expect(body.msg).toBe('invalid sort query')
+    })
+  });
+  test('400 - invalid order query', () => {
+    return request(app)
+    .get('/api/articles?order=right')
+    .expect(400)
+    .then(({body})=> {
+      expect(body.msg).toBe('invalid order query')
     })
   });
 })
