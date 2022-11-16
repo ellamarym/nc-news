@@ -47,8 +47,6 @@ exports.fetchCommentsByArticleId = (article_id) => {
     })
 }
 
-//ticket 6 goes here
-
 exports.insertCommentByArticleId = (articleId, {username, body}) => {
  
 const queryString = `
@@ -62,4 +60,17 @@ return db.query(queryString, [articleId, username, body]).then((comment) => {
     
     return comment.rows[0]
 })
+}
+
+exports.changeArticleById = (articleId, voteChange) => {
+    const queryString = `
+    UPDATE articles
+    SET votes = votes + $1
+    WHERE article_id = $2
+    RETURNING *
+    `
+    return db.query(queryString, [voteChange, articleId]).then((article) => {
+    return article.rows[0]
+})
+
 }
