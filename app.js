@@ -1,5 +1,5 @@
 const express = require("express");
-const { getTopics, getArticles, getArticleById,  getCommentsByArticleId, postCommentByArticleId  } = require("./controllers/app.controller");
+const { getTopics, getArticles, getArticleById,  getCommentsByArticleId, postCommentByArticleId, getUsers  } = require("./controllers/app.controller");
 const app = express();
 app.use(express.json())
 
@@ -9,6 +9,9 @@ app.get('/api/articles', getArticles)
 app.get('/api/articles/:article_id', getArticleById)
 app.get('/api/articles/:article_id/comments', getCommentsByArticleId)
 app.post('/api/articles/:article_id/comments', postCommentByArticleId)
+//ticket 8 
+app.get('/api/users', getUsers)
+
 app.all("/*", (req, res) => {
     res.status(404).send({ msg: "link not found" });
   });

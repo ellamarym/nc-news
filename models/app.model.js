@@ -47,8 +47,6 @@ exports.fetchCommentsByArticleId = (article_id) => {
     })
 }
 
-//ticket 6 goes here
-
 exports.insertCommentByArticleId = (articleId, {username, body}) => {
  
 const queryString = `
@@ -62,4 +60,12 @@ return db.query(queryString, [articleId, username, body]).then((comment) => {
     
     return comment.rows[0]
 })
+}
+
+exports.fetchUsers = () => {
+    return db.query(`
+    SELECT * FROM users;
+    `).then((users) => {
+        return users.rows
+    })
 }
