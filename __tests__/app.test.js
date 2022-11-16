@@ -140,3 +140,11 @@ describe('GET/api/articles/:article_id/comments', ()=> {
   });
 })
 
+//ticket 7 tests here 
+
+// describe('8. PATCH /api/articles/:article_id', () =>{
+//   const voteChange = {inc_votes: 100}
+//   return request(app)
+//   .patch('/api/articles/1')
+//   .send(voteChange)
+// })
