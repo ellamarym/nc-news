@@ -11,3 +11,4 @@ exports.checkCommentExists = (comment_id) => {
         }
     })
 }
+

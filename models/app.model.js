@@ -134,3 +134,15 @@ exports.removeCommentById = (commentId) => {
         `, [commentId])
     })
 }
+
+exports.fetchUserByUsername = (username) => {
+    const queryString = `
+    SELECT * FROM users
+    WHERE username = $1`
+    return db.query(queryString, [username]).then((user) => {
+        if(!user.rows.length) {
+            return Promise.reject({status: 404, msg: 'no such user'})
+        }
+        return user.rows[0]
+    })
+}
