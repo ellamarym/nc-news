@@ -1,27 +1,102 @@
-{
-  "GET /api": {
-    "description": "serves up a json representation of all the available endpoints of the api"
-  },
-  "GET /api/topics": {
-    "description": "serves an array of all topics",
-    "queries": [],
-    "exampleResponse": {
-      "topics": [{ "slug": "football", "description": "Footie!" }]
-    }
-  },
-  "GET /api/articles": {
-    "description": "serves an array of all topics",
-    "queries": ["author", "topic", "sort_by", "order"],
-    "exampleResponse": {
-      "articles": [
-        {
-          "title": "Seafood substitutions are increasing",
-          "topic": "cooking",
-          "author": "weegembump",
-          "body": "Text from the article..",
-          "created_at": 1527695953341
+
+  {
+    "GET /api": {
+      "description": "serves up a json representation of all the available endpoints of the api"
+    },
+    "GET /api/topics": {
+      "description": "serves an array of all topics",
+      "queries": [],
+      "exampleResponse": {
+        "topics": [{ "slug": "football", "description": "Footie!" }]
+      }
+    },
+    "GET /api/articles": {
+      "description": "serves an array of all topics",
+      "queries": ["author", "topic", "sort_by", "order"],
+      "exampleResponse": {
+        "articles": [
+          {
+            "title": "Seafood substitutions are increasing",
+            "topic": "cooking",
+            "author": "weegembump",
+            "body": "Text from the article..",
+            "created_at": 1527695953341
+          }
+        ]
+      }
+    },
+    "GET /api/articles/:article_id" : {
+      "description": "serves the article with the specified article_id", 
+      "queries": [],
+      "exampleResponse": {
+        "article": {
+          "title": "Eight pug gifs that remind me of mitch",
+          "topic": "mitch",
+          "author": "icellusedkars",
+          "body": "some gifs",
+          "created_at": 1604394720000,
+          "votes": 0,
+          "comment_count" : 10
         }
-      ]
+      }
+    },
+    "GET/api/articles/:article_id/comments" : {
+      "description": "serves an array of comments with the specified article_id",
+      "queries" : [],
+      "exampleResponse" : {
+        "comments" : [
+          {"body": "The owls are not what they seem.",
+          "votes": 20,
+          "author": "icellusedkars",
+          "article_id": 9,
+          "created_at": 1584205320000
+          }
+        ]
+      }
+    },
+    "POST /api/articles/:article_id/comments" : {
+      "description": "posts new comment to the comments table with the specified article_id, and serves up posted comment",
+      "queries" : [],
+      "exampleResponse" : {
+        "comment" : 
+          {"body": "The owls are not what they seem.",
+          "votes": 20,
+          "author": "icellusedkars",
+          "article_id": 9,
+          "created_at": 1584205320000
+        }
+      }
+    },
+    "PATCH /api/articles/:article_id" : {
+      "description" : "increments the votes of the specifed article by the number given, and serves up updated article",
+      "queries" : [],
+      "exampleResponse" : {
+        "article" : {
+        "title": "Seven inspirational thought leaders from Manchester UK",
+        "topic": "mitch",
+        "author": "rogersop",
+        "body": "Who are we kidding, there is only one, and it's Mitch!",
+        "created_at": 1589433300000,
+        "votes": 100
+        }
+      }
+    },
+    "GET /api/users" : {
+      "description" : "serves an array of users",
+      "queries" : [],
+      "exampleResponse" : {
+        "users" : [
+          {"username": "butter_bridge",
+          "name": "jonny",
+          "avatar_url":
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+          }
+        ]
+      }
+    },
+    "DELETE /api/comments/:comment_id" : {
+      "description" : "removes the comment with given id from the comments table",
+      "queries" : [],
+      "exampleResponse" : {}
     }
-  }
 }

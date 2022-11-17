@@ -1,6 +1,6 @@
 const e = require("express");
 const express = require("express");
-const { getTopics, getArticles, getArticleById,  getCommentsByArticleId, patchArticleById, postCommentByArticleId, getUsers, deleteCommentById  } = require("./controllers/app.controller");
+const { getTopics, getArticles, getArticleById,  getCommentsByArticleId, patchArticleById, postCommentByArticleId, getUsers, deleteCommentById, getEndpoints  } = require("./controllers/app.controller");
 const app = express();
 app.use(express.json())
 
@@ -14,6 +14,7 @@ app.patch('/api/articles/:article_id', patchArticleById)
 app.get('/api/users', getUsers)
 //ticket 11
 app.delete('/api/comments/:comment_id', deleteCommentById)
+app.get('/api', getEndpoints)
 
 app.all("/*", (req, res) => {
     res.status(404).send({ msg: "link not found" });
