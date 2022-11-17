@@ -380,6 +380,7 @@ describe('10. GET /api/articles (queries)', () => {
     .expect(200)
     .then(({body})=> {
       expect(body.articles).toBeSortedBy('title')
+      expect(body.articles.length).toBeGreaterThan(0)
       body.articles.forEach((article) => {
         expect(article).toMatchObject({
           title: expect.any(String),
