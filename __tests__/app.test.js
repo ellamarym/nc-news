@@ -411,3 +411,13 @@ describe('10. GET /api/articles (queries)', () => {
     })
   });
 })
+
+//ticket 11 here
+
+describe('12. DELETE /api/comments/:comment_id', () => {
+  xtest('204 - comment deleted and no content returned ', () => {
+    return request(app)
+    .delete('/api/comments/1')
+    .expect(204)
+  });
+})

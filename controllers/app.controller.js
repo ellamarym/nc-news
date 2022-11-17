@@ -90,3 +90,8 @@ exports.getUsers = (req, res, next) => {
         next(err)
     })
 }
+
+//ticket 11
+ exports.deleteCommentById = (req,res,next) => {
+
+ }

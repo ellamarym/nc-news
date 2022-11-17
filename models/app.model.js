@@ -120,3 +120,7 @@ exports.fetchUsers = () => {
         return users.rows
     })
 }
+
+//ticket 11
+
+exports.removeCommentById = () => {}
