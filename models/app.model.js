@@ -127,10 +127,11 @@ exports.fetchUsers = () => {
 //ticket 11
 
 exports.removeCommentById = (commentId) => {
-    checkCommentExists(commentId)
-   return db.query(`
-   DELETE FROM comments 
-   WHERE comment_id = $1
-   `, [commentId])
-
+    return checkCommentExists(commentId)
+    .then(()=> {
+        return db.query(`
+        DELETE FROM comments 
+        WHERE comment_id = $1
+        `, [commentId])
+    })
 }
