@@ -414,8 +414,16 @@ describe('10. GET /api/articles (queries)', () => {
 
 
 
-  describe('GET /api/articles/:article_id (comment count)', () => {
-    test('200 - ', () => {
-      
-    });
+describe('GET /api/articles/:article_id (comment count)', () => {
+  test('200 - returns article with comment count included ', () => {
+    return request(app)
+    .get('/api/articles/1')
+    .expect(200)
+    .then(({body})=> {
+      expect(body.article).toMatchObject({
+          article_id: 1,
+          comment_count : expect.any(Number)
+    })
   })
+  });
+})
