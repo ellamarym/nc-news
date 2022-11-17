@@ -2,24 +2,62 @@ const { checkArticleExists } = require('../db/apputils')
 const db = require('../db/connection')
 const articles = require('../db/data/test-data/articles')
 
-exports.fetchTopics = () => {
-    return db.query(`
-    SELECT * FROM topics;
-    `).then((topics) => {
+exports.fetchTopics = (topic) => {
+    const queryValues = []
+    let queryString = `
+    SELECT * FROM topics
+    `
+    if(topic) {
+        queryString += ' WHERE slug = $1'
+        queryValues.push(topic)
+    }
+    return db.query(queryString, queryValues).then((topics) => {
+        if(!topics.rows.length) {
+            return Promise.reject({status: 404, msg: 'topic not found'})
+         }
+        
         return topics.rows
     })
 }
 
-exports.fetchArticles = () => {
-    return db.query(`
+exports.fetchArticles = (topic, sortBy, order) => {
+    
+    const queryValues = []
+    let queryString = `
     SELECT title, topic, articles.author, articles.article_id, articles.created_at, articles.votes, CAST(COUNT(comments.article_id) AS int) AS comment_count
     FROM articles
     LEFT JOIN comments ON comments.article_id = articles.article_id
-    GROUP BY articles.article_id
-    ORDER BY articles.created_at DESC
-    ;
-    `).then((articles)=> {
+    `
+    if(topic) { 
+        queryString += ` WHERE topic = $1`
+        queryValues.push(topic)
+        }
+
+    queryString += ' GROUP BY articles.article_id'
+
+    const validColumns = ['title', 'topic', 'author', 'article_id', 'created_at', 'votes', 'comment_count']
+    if(sortBy && !validColumns.includes(sortBy)) {
+        return Promise.reject({status: 400, msg: "invalid sort query"})    
+    } else if(sortBy) {
+        queryString += ` ORDER BY ${sortBy} `
+    } else {
+        queryString += ` ORDER BY articles.created_at `
+    }
+
+    if(!order) {
+        queryString += 'DESC'
+    } else {
+        order = order.toUpperCase()
+        if(order === 'ASC' || order ==='DESC') {
+            queryString += order
+        } else {
+            return Promise.reject({status: 400, msg: "invalid order query"})
+        }
+    } 
+
+    return db.query(queryString, queryValues).then((articles)=> {
         return articles.rows
+
     })
 }
 

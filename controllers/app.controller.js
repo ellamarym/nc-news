@@ -3,7 +3,8 @@ const articles = require("../db/data/test-data/articles");
 const { fetchTopics, fetchArticles, fetchArticleById, insertCommentByArticleId, fetchCommentsByArticleId, changeArticleById, fetchUsers } = require("../models/app.model");
 
 exports.getTopics = (req, res, next) => {
-    fetchTopics().then((topics) => {
+    const topic = req.query.topic
+    fetchTopics(topic).then((topics) => {
         res.status(200).send({topics})
     })
     .catch((err) => {
@@ -12,7 +13,15 @@ exports.getTopics = (req, res, next) => {
 }
 
 exports.getArticles = (req, res, next) => {
-    fetchArticles().then((articles) => {
+    const topic = req.query.topic
+    const sortBy = req.query.sortby
+    const order = req.query.order
+
+    const promise1 = fetchTopics(topic)
+    const promise2 = fetchArticles(topic, sortBy, order)
+
+    Promise.all([promise1, promise2]).then((results) => {
+        const articles = results[1]
         res.status(200).send({articles})
     })
     .catch((err) => {
