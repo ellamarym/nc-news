@@ -124,7 +124,6 @@ exports.fetchUsers = () => {
     })
 }
 
-//ticket 11
 
 exports.removeCommentById = (commentId) => {
     return checkCommentExists(commentId)
