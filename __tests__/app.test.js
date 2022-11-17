@@ -342,7 +342,7 @@ describe('10. GET /api/articles (queries)', () => {
   });
   test('404 - valid but non-existent topic', () => {
     return request(app)
-    .get('/api/articles?topic=bums')
+    .get('/api/articles?topic=invalid')
     .expect(404)
     .then(({body})=> {
       expect(body.msg).toBe('topic not found')
@@ -426,4 +426,29 @@ describe('GET /api/articles/:article_id (comment count)', () => {
     })
   })
   });
+})
+
+
+describe('12. DELETE /api/comments/:comment_id', () => {
+  test('204 - comment deleted and no content returned ', () => {
+    return request(app)
+    .delete('/api/comments/1')
+    .expect(204)
+  });
+  test('404 - valid but non-existent comment id', () => {
+    return request(app)
+    .delete('/api/comments/1000')
+    .expect(404)
+    .then(({body})=> {
+      expect(body.msg).toBe('comment not found')
+    })
+  })
+  test('400 - invalid comment id', () => {
+    return request(app)
+    .delete('/api/comments/invalid')
+    .expect(400)
+    .then(({body})=> {
+      expect(body.msg).toBe('bad request')
+    })
+  })
 })
