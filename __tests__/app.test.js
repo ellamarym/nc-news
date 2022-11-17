@@ -316,3 +316,11 @@ test('422 - input invalid due to mispelling of key', () => {
       })
     });
   })
+
+  //tests for 10 here
+
+  describe('GET /api/articles/:article_id (comment count)', () => {
+    test('200 - ', () => {
+      
+    });
+  })
