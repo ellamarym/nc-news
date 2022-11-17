@@ -1,4 +1,4 @@
-const { checkArticleExists } = require('../db/apputils')
+const { checkArticleExists, checkCommentExists } = require('../db/apputils')
 const db = require('../db/connection')
 const articles = require('../db/data/test-data/articles')
 
@@ -123,4 +123,11 @@ exports.fetchUsers = () => {
 
 //ticket 11
 
-exports.removeCommentById = () => {}
+exports.removeCommentById = (commentId) => {
+    checkCommentExists(commentId)
+   return db.query(`
+   DELETE FROM comments 
+   WHERE comment_id = $1
+   `, [commentId])
+
+}

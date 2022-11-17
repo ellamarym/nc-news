@@ -415,9 +415,18 @@ describe('10. GET /api/articles (queries)', () => {
 //ticket 11 here
 
 describe('12. DELETE /api/comments/:comment_id', () => {
-  xtest('204 - comment deleted and no content returned ', () => {
+  test('204 - comment deleted and no content returned ', () => {
     return request(app)
     .delete('/api/comments/1')
     .expect(204)
   });
+  xtest('404 - valid but non-existent comment id', () => {
+    return request(app)
+    .delete('/api/comments/1000')
+    .expect(404)
+    .then(({body})=> {
+      expect(body.msg).toBe('comment not found')
+    })
+    
+  })
 })

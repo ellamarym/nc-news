@@ -1,6 +1,6 @@
 const express = require("express");
 const articles = require("../db/data/test-data/articles");
-const { fetchTopics, fetchArticles, fetchArticleById, insertCommentByArticleId, fetchCommentsByArticleId, changeArticleById, fetchUsers } = require("../models/app.model");
+const { fetchTopics, fetchArticles, fetchArticleById, insertCommentByArticleId, fetchCommentsByArticleId, changeArticleById, fetchUsers, removeCommentById } = require("../models/app.model");
 
 exports.getTopics = (req, res, next) => {
     const topic = req.query.topic
@@ -93,5 +93,10 @@ exports.getUsers = (req, res, next) => {
 
 //ticket 11
  exports.deleteCommentById = (req,res,next) => {
-
+    const commentId = req.params.comment_id
+    removeCommentById(commentId).then(()=> {
+        res.status(204).send()
+    }).catch((err) => {
+        next(err)
+    })
  }
