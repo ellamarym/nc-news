@@ -23,6 +23,14 @@ app.use((err, req, res, next)=> {
     }
 })
 
+app.use((err,req,res,next) => {
+    if(err.code === '42703') {
+        res.status(400).send({msg: 'invalid limit query'})
+    } else {
+        next(err)
+    }
+})
+
 app.use((err,req,res,next)=> {
     if(err.code === '23503') {
         res.status(401).send({msg: 'invalid username'})

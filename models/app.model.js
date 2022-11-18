@@ -21,7 +21,7 @@ exports.fetchTopics = (topic) => {
     })
 }
 
-exports.fetchArticles = (topic, sortBy, order, limit) => {
+exports.fetchArticles = (topic, sortBy, order, limit, page) => {
     const queryValues = []
     let queryString = `
     SELECT title, topic, articles.author, articles.article_id, articles.created_at, articles.votes, CAST(COUNT(comments.article_id) AS int) AS comment_count,  CAST(COUNT(*) OVER() AS int) AS total_count
@@ -54,8 +54,18 @@ exports.fetchArticles = (topic, sortBy, order, limit) => {
         }
     } 
     if(limit) {
-        queryString += ` LIMIT ${limit}`
+        let offset = 0
+        if(page) {
+           let numPage = parseInt(page)
+            if(numPage){
+                offset = page*limit - limit 
+            } else {
+                return Promise.reject({status: 400, msg: "invalid page query"})
+            }
+        }
+        queryString += ` LIMIT ${limit} OFFSET ${offset}`
     }
+    
     return db.query(queryString, queryValues).then((articles)=> {
         return articles.rows
 

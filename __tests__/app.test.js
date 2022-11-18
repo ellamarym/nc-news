@@ -634,10 +634,10 @@ describe('POST /api/articles', () => {
 describe('GET /api/articles (pagination)', () => {
   test('200 - limit query applied', () => {
     return request(app)
-    .get('/api/articles?limit=5')
+    .get('/api/articles?limit=6')
     .expect(200)
     .then(({body})=> {
-      expect(body.articles.length).toBe(5)
+      expect(body.articles.length).toBe(6)
       body.articles.forEach((article) => {
         expect(article).toMatchObject({
           author: expect.any(String),
@@ -649,6 +649,61 @@ describe('GET /api/articles (pagination)', () => {
           total_count: expect.any(Number)
         })
       })
+    })
+  })
+  test('200 - limit query and topic query applied, total count returns correct total count', () => {
+    return request(app)
+    .get('/api/articles?limit=5&topic=mitch')
+    .expect(200)
+    .then(({body})=> {
+      expect(body.articles.length).toBe(5)
+      body.articles.forEach((article) => {
+        expect(article).toMatchObject({
+          author: expect.any(String),
+          title: expect.any(String),
+          article_id: expect.any(Number),
+          topic: 'mitch',
+          votes: expect.any(Number),
+          comment_count: expect.any(Number),
+          total_count: 11
+        })
+      })
+    })
+  })
+  test('200 - limit query and pagination query applied', () => {
+    return request(app)
+    .get('/api/articles?limit=5&p=2')
+    .expect(200)
+    .then(({body})=> {
+      expect(body.articles.length).toBe(5)
+      expect(body.articles[0]).toEqual( 
+        {
+          title: 'Living in the shadow of a great man',
+          topic: 'mitch',
+          author: 'butter_bridge',
+          article_id: 1,
+          created_at: '2020-07-09T20:11:00.000Z',
+          votes: 100,
+          comment_count: 11,
+          total_count: 12
+        },
+      )
+    })
+  })
+  test('400 - invalid limit query', () => {
+    return request(app)
+    .get('/api/articles?limit=invalid')
+    .expect(400)
+    .then(({body})=> {
+      expect(body.msg).toBe('invalid limit query')
+    })
+  })
+  test('400 - invalid page query', () => {
+    return request(app)
+    .get('/api/articles?limit=5&p=invalid')
+    .expect(400)
+    .then(({body})=> {
+      expect(body.msg).toBe('invalid page query')
     })
   })
 })

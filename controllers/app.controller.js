@@ -17,9 +17,10 @@ exports.getArticles = (req, res, next) => {
     const topic = req.query.topic
     const sortBy = req.query.sortby
     const order = req.query.order
+    const page = req.query.p
 
     const promise1 = fetchTopics(topic)
-    const promise2 = fetchArticles(topic, sortBy, order, limit)
+    const promise2 = fetchArticles(topic, sortBy, order, limit, page)
 
     Promise.all([promise1, promise2]).then((results) => {
         const articles = results[1]
