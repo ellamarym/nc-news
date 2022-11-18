@@ -146,3 +146,14 @@ exports.fetchUserByUsername = (username) => {
         return user.rows[0]
     })
 }
+
+exports.changeCommentById = async (comment_id, inc_votes) => {
+    await checkCommentExists(comment_id)
+    const changedComment = await db.query(`
+        UPDATE comments
+        SET votes = votes + $1
+        WHERE comment_id = $2
+        RETURNING *
+    `, [inc_votes, comment_id])
+    return changedComment.rows[0]
+}
