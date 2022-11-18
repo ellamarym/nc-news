@@ -706,4 +706,62 @@ describe('GET /api/articles (pagination)', () => {
       expect(body.msg).toBe('invalid page query')
     })
   })
+  test('400 - invalid page query', () => {
+    return request(app)
+    .get('/api/articles?limit=5&p=-1')
+    .expect(400)
+    .then(({body})=> {
+      expect(body.msg).toBe('invalid page query')
+    })
+  })
+})
+
+describe('GET /api/articles/:article_id/comments (pagination)', () => {
+  test('200 - limit query applied, should return limited comments', () => {
+    return request(app)
+    .get('/api/articles/1/comments?limit=5')
+    .expect(200)
+    .then(({body})=> {
+      expect(body.comments.length).toBe(5)
+    })
+  });
+  test('200 - limit and page query applied, returns correct comments', () => {
+    return request(app)
+    .get('/api/articles/1/comments?limit=2&p=2')
+    .expect(200)
+    .then(({body})=>{
+      expect(body.comments.length).toBe(2)
+      expect(body.comments[0]).toEqual({
+        comment_id: 4,
+        votes: -100,
+        created_at: '2020-02-23T12:01:00.000Z',
+        author: 'icellusedkars',
+        body: ' I carry a log — yes. Is it funny to you? It is not to me.'
+      })
+    })
+  })
+  test('400 - invalid limit query', () => {
+    return request(app)
+    .get('/api/articles/1/comments?limit=invalid')
+    .expect(400)
+    .then(({body})=> {
+      expect(body.msg).toBe('invalid limit query')
+    })
+  })
+  test('400 - invalid page query', () => {
+    return request(app)
+    .get('/api/articles/1/comments?limit=5&p=invalid')
+    .expect(400)
+    .then(({body})=> {
+      expect(body.msg).toBe('invalid page query')
+    })
+  })
+  test('400 - invalid page query', () => {
+    return request(app)
+    .get('/api/articles/1/comments?limit=5&p=-1')
+    .expect(400)
+    .then(({body})=> {
+      expect(body.msg).toBe('invalid page query')
+    })
+  })
 })

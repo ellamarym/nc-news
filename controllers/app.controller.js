@@ -43,8 +43,10 @@ exports.getArticleById = (req, res, next) => {
 
 exports.getCommentsByArticleId = (req, res, next) => {
     const article_id = req.params.article_id
+    const limit = req.query.limit
+    const page = req.query.p
     const promise1 = fetchArticleById(article_id)
-    const promise2 = fetchCommentsByArticleId(article_id)
+    const promise2 = fetchCommentsByArticleId(article_id, limit, page)
     
     Promise.all([promise1 , promise2])
     .then((results) => {
