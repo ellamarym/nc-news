@@ -497,3 +497,72 @@ describe('17. GET /api/users/:username', () => {
     })
   })
 })
+
+describe('PATCH /api/comments/:comment_id', ()=> {
+  test('201 - responds with comment object with updated vote count (increment)', ()=> {
+    return request(app)
+    .patch('/api/comments/1')
+    .send({inc_votes : 2 })
+    .expect(201)
+    .then(({body})=> {
+      expect(body.comment).toMatchObject({
+        body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        votes: 18,
+        author: "butter_bridge",
+        article_id: 9,
+        created_at: expect.any(String),
+      })
+    })
+  })
+  test('201 - responds with comment object with updated vote count (decrement)', ()=> {
+    return request(app)
+    .patch('/api/comments/1')
+    .send({inc_votes : -2 })
+    .expect(201)
+    .then(({body})=> {
+      expect(body.comment).toMatchObject({
+        body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        votes: 14,
+        author: "butter_bridge",
+        article_id: 9,
+        created_at: expect.any(String),
+      })
+    })
+  })
+  test('404 - valid but non-existent comment id', () => {
+    return request(app)
+    .patch('/api/comments/1000')
+    .send({inc_votes : 1})
+    .expect(404)
+    .then(({body})=> {
+      expect(body.msg).toBe('comment not found')
+    })
+  })
+  test('400 - invalid comment id', () => {
+    return request(app)
+    .patch('/api/comments/invalid')
+    .send({inc_votes : 1})
+    .expect(400)
+    .then(({body})=> {
+      expect(body.msg).toBe('bad request')
+    })
+  })
+  test('400 - invalid vote input', () => {
+    return request(app)
+    .patch('/api/comments/1')
+    .send({inc_votes : 'banana'})
+    .expect(400)
+    .then(({body})=> {
+      expect(body.msg).toBe('bad request')
+    })
+  })
+  test('422 - input invalid due to mispelling of key', () => {
+    return request(app)
+    .patch('/api/comments/1')
+    .send({change_votes : 1})
+    .expect(422)
+    .then(({body})=> {
+      expect(body.msg).toBe('invalid user input')
+    })
+  })
+})
