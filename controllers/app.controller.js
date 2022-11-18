@@ -1,6 +1,6 @@
 const express = require("express");
 const articles = require("../db/data/test-data/articles");
-const { fetchTopics, fetchArticles, fetchArticleById, insertCommentByArticleId, fetchCommentsByArticleId, changeArticleById, fetchUsers, removeCommentById } = require("../models/app.model");
+const { fetchTopics, fetchArticles, fetchArticleById, insertCommentByArticleId, fetchCommentsByArticleId, changeArticleById, fetchUsers, removeCommentById, fetchUserByUsername } = require("../models/app.model");
 const {readFile} = require('fs/promises')
 exports.getTopics = (req, res, next) => {
     const topic = req.query.topic
@@ -110,3 +110,11 @@ exports.getUsers = (req, res, next) => {
     })
  }
 
+ exports.getUserByUsername = (req, res, next) => {
+    const username = req.params.username
+    fetchUserByUsername(username).then((user) => {
+        res.status(200).send({user})
+    }).catch((err) => {
+        next(err)
+    })
+ }

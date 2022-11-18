@@ -474,3 +474,26 @@ describe('13. GET /api' , () => {
     })
   });
 })
+
+describe('17. GET /api/users/:username', () => {
+  test('200 - returns with user object with given username', () => {
+    return request(app)
+    .get('/api/users/icellusedkars')
+    .expect(200)
+    .then(({body}) => {
+      expect(body.user).toMatchObject({
+        username: 'icellusedkars',
+        avatar_url: expect.any(String),
+        name: expect.any(String)
+      })
+    })
+  });
+  test('400 - invalid username', () => {
+    return request(app)
+    .get('/api/users/35')
+    .expect(404)
+    .then(({body})=>{
+      expect(body.msg).toBe('no such user')
+    })
+  })
+})
