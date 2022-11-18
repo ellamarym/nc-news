@@ -1,6 +1,6 @@
 const express = require("express");
 const articles = require("../db/data/test-data/articles");
-const { fetchTopics, fetchArticles, fetchArticleById, insertCommentByArticleId, fetchCommentsByArticleId, changeArticleById, fetchUsers, removeCommentById, fetchUserByUsername, changeCommentById } = require("../models/app.model");
+const { fetchTopics, fetchArticles, fetchArticleById, insertCommentByArticleId, fetchCommentsByArticleId, changeArticleById, fetchUsers, removeCommentById, fetchUserByUsername, changeCommentById, insertArticle } = require("../models/app.model");
 const {readFile} = require('fs/promises')
 exports.getTopics = (req, res, next) => {
     const topic = req.query.topic
@@ -13,12 +13,13 @@ exports.getTopics = (req, res, next) => {
 }
 
 exports.getArticles = (req, res, next) => {
+    const limit = req.query.limit
     const topic = req.query.topic
     const sortBy = req.query.sortby
     const order = req.query.order
 
     const promise1 = fetchTopics(topic)
-    const promise2 = fetchArticles(topic, sortBy, order)
+    const promise2 = fetchArticles(topic, sortBy, order, limit)
 
     Promise.all([promise1, promise2]).then((results) => {
         const articles = results[1]
@@ -124,8 +125,23 @@ exports.getUsers = (req, res, next) => {
         const {comment_id} = req.params
         const {inc_votes} = req.body
         const comment = await changeCommentById(comment_id, inc_votes)
-        res.status(201).send({comment})
+        res.status(200).send({comment})
     } catch(err) {
+        next(err)
+    }
+ }
+
+ exports.postArticle = async(req, res, next) => {
+    try {
+        const newArticle = req.body
+        const username = req.body.author
+        const topic = req.body.topic
+        await fetchTopics(topic)
+        await fetchUserByUsername(username)
+        const createdArticleId = await insertArticle(newArticle)
+        const article = await fetchArticleById(createdArticleId)
+        res.status(201).send({article})
+    } catch (err) {
         next(err)
     }
  }

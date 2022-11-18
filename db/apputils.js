@@ -12,3 +12,12 @@ exports.checkCommentExists = (comment_id) => {
     })
 }
 
+exports.countArticles =  (topic) => {
+    const queryString =  `SELECT * FROM articles`
+    if(topic) { 
+        queryString += ` WHERE topic = $1`
+        }
+    return db.query(queryString, [topic]).then((articles) => {
+        return articles.rows.length
+    })
+}

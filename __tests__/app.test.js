@@ -227,7 +227,7 @@ describe ('POST /api/articles/:article_id/comments', () => {
 
 
 
-describe('8. PATCH /api/articles/:article_id', () =>{
+describe('PATCH /api/articles/:article_id', () =>{
  test('201 - positive vote change adds votes to count', () => {
     return request(app)
     .patch('/api/articles/1')
@@ -300,7 +300,7 @@ test('422 - input invalid due to mispelling of key', () => {
 })
 })
 
-describe(' GET /api/users', () => {
+describe('/api/users', () => {
     test('200 - returns with an array of users', () => {
       return request(app)
       .get('/api/users')
@@ -320,7 +320,7 @@ describe(' GET /api/users', () => {
 
 
 
-describe('10. GET /api/articles (queries)', () => {
+describe('GET /api/articles (queries)', () => {
   test('200 - topic query added and returned articles match this topic', () => {
     return request(app)
     .get('/api/articles?topic=cats')
@@ -414,7 +414,7 @@ describe('10. GET /api/articles (queries)', () => {
 
 
 
-describe('GET /api/articles/:article_id (comment count)', () => {
+describe('/api/articles/:article_id (comment count)', () => {
   test('200 - returns article with comment count included ', () => {
     return request(app)
     .get('/api/articles/1')
@@ -429,7 +429,7 @@ describe('GET /api/articles/:article_id (comment count)', () => {
 })
 
 
-describe('12. DELETE /api/comments/:comment_id', () => {
+describe('DELETE /api/comments/:comment_id', () => {
   test('204 - comment deleted and no content returned ', () => {
     return request(app)
     .delete('/api/comments/1')
@@ -453,7 +453,7 @@ describe('12. DELETE /api/comments/:comment_id', () => {
   })
 })
 
-describe('13. GET /api' , () => {
+describe('GET /api' , () => {
   test('200 - responds with JSON object of endpoint descriptions', () => {
     return request(app)
     .get('/api')
@@ -475,7 +475,7 @@ describe('13. GET /api' , () => {
   });
 })
 
-describe('17. GET /api/users/:username', () => {
+describe('GET /api/users/:username', () => {
   test('200 - returns with user object with given username', () => {
     return request(app)
     .get('/api/users/icellusedkars')
@@ -499,11 +499,11 @@ describe('17. GET /api/users/:username', () => {
 })
 
 describe('PATCH /api/comments/:comment_id', ()=> {
-  test('201 - responds with comment object with updated vote count (increment)', ()=> {
+  test('200 - responds with comment object with updated vote count (increment)', ()=> {
     return request(app)
     .patch('/api/comments/1')
     .send({inc_votes : 2 })
-    .expect(201)
+    .expect(200)
     .then(({body})=> {
       expect(body.comment).toMatchObject({
         body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
@@ -514,11 +514,11 @@ describe('PATCH /api/comments/:comment_id', ()=> {
       })
     })
   })
-  test('201 - responds with comment object with updated vote count (decrement)', ()=> {
+  test('200 - responds with comment object with updated vote count (decrement)', ()=> {
     return request(app)
     .patch('/api/comments/1')
     .send({inc_votes : -2 })
-    .expect(201)
+    .expect(200)
     .then(({body})=> {
       expect(body.comment).toMatchObject({
         body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
@@ -563,6 +563,92 @@ describe('PATCH /api/comments/:comment_id', ()=> {
     .expect(422)
     .then(({body})=> {
       expect(body.msg).toBe('invalid user input')
+    })
+  })
+})
+
+describe('POST /api/articles', () => {
+  test('201 - new article created and returned', () => {
+    const newArticle = {
+      author: 'butter_bridge' , 
+      title: 'This is an article' , 
+      body: 'This is a very boring article', 
+      topic: 'paper'}
+    return request(app)
+    .post('/api/articles')
+    .send(newArticle)
+    .expect(201)
+    .then(({body})=> {
+      expect(body.article).toMatchObject({
+        article_id: expect.any(Number),
+        votes: 0,
+        created_at: expect.any(String),
+        comment_count: 0,
+        ...newArticle
+      })
+    })
+  })
+  test('404 - valid but non existent user', ()=> {
+    const newArticle = {
+      author: 'not valid user' , 
+      title: 'This is an article' , 
+      body: 'This is a very boring article', 
+      topic: 'paper'}
+    return request(app)
+    .post('/api/articles')
+    .send(newArticle)
+    .expect(404)
+    .then(({body})=> {
+      expect(body.msg).toBe('no such user')
+    })
+  })
+  test('422 - invalid input - missing keys', ()=> {
+    const newArticle = {
+      author: 'butter_bridge' ,  
+      body: 'This is a very boring article', 
+      topic: 'paper'}
+    return request(app)
+    .post('/api/articles')
+    .send(newArticle)
+    .expect(422)
+    .then(({body})=> {
+      expect(body.msg).toBe('invalid user input')
+    })
+  })
+  test('404 - valid but non existent topic', ()=> {
+    const newArticle = {
+      author: 'butter_bridge' , 
+      title: 'This is an article' , 
+      body: 'This is a very boring article', 
+      topic: 'noTopic'}
+    return request(app)
+    .post('/api/articles')
+    .send(newArticle)
+    .expect(404)
+    .then(({body})=> {
+      expect(body.msg).toBe('topic not found')
+    })
+  })
+})
+
+describe('GET /api/articles (pagination)', () => {
+  test('200 - limit query applied', () => {
+    return request(app)
+    .get('/api/articles?limit=5')
+    .expect(200)
+    .then(({body})=> {
+      expect(body.articles.length).toBe(5)
+      body.articles.forEach((article) => {
+        expect(article).toMatchObject({
+          author: expect.any(String),
+          title: expect.any(String),
+          article_id: expect.any(Number),
+          topic: expect.any(String),
+          votes: expect.any(Number),
+          comment_count: expect.any(Number),
+          total_count: expect.any(Number)
+        })
+      })
     })
   })
 })

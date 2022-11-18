@@ -1,4 +1,5 @@
-const { checkArticleExists, checkCommentExists } = require('../db/apputils')
+const d = require('d')
+const { checkArticleExists, checkCommentExists, countArticles } = require('../db/apputils')
 const db = require('../db/connection')
 const articles = require('../db/data/test-data/articles')
 
@@ -20,11 +21,10 @@ exports.fetchTopics = (topic) => {
     })
 }
 
-exports.fetchArticles = (topic, sortBy, order) => {
-    
+exports.fetchArticles = (topic, sortBy, order, limit) => {
     const queryValues = []
     let queryString = `
-    SELECT title, topic, articles.author, articles.article_id, articles.created_at, articles.votes, CAST(COUNT(comments.article_id) AS int) AS comment_count
+    SELECT title, topic, articles.author, articles.article_id, articles.created_at, articles.votes, CAST(COUNT(comments.article_id) AS int) AS comment_count,  CAST(COUNT(*) OVER() AS int) AS total_count
     FROM articles
     LEFT JOIN comments ON comments.article_id = articles.article_id
     `
@@ -43,7 +43,6 @@ exports.fetchArticles = (topic, sortBy, order) => {
     } else {
         queryString += ` ORDER BY articles.created_at `
     }
-
     if(!order) {
         queryString += 'DESC'
     } else {
@@ -54,7 +53,9 @@ exports.fetchArticles = (topic, sortBy, order) => {
             return Promise.reject({status: 400, msg: "invalid order query"})
         }
     } 
-
+    if(limit) {
+        queryString += ` LIMIT ${limit}`
+    }
     return db.query(queryString, queryValues).then((articles)=> {
         return articles.rows
 
@@ -156,4 +157,17 @@ exports.changeCommentById = async (comment_id, inc_votes) => {
         RETURNING *
     `, [inc_votes, comment_id])
     return changedComment.rows[0]
+}
+
+exports.insertArticle = async ({author, title, body, topic}) => {
+    const queryString = `
+    INSERT INTO articles
+    (author, title, body, topic)
+    VALUES 
+    ($1, $2, $3, $4)
+    RETURNING article_id;
+
+    `
+    const newArticle = await db.query(queryString, [author,title,body,topic])
+    return newArticle.rows[0].article_id
 }
