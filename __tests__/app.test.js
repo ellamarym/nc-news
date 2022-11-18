@@ -225,8 +225,6 @@ describe ('POST /api/articles/:article_id/comments', () => {
     })
   });
 
-
-
 describe('PATCH /api/articles/:article_id', () =>{
  test('201 - positive vote change adds votes to count', () => {
     return request(app)
@@ -317,8 +315,6 @@ describe('/api/users', () => {
       })
     });
   })
-
-
 
 describe('GET /api/articles (queries)', () => {
   test('200 - topic query added and returned articles match this topic', () => {
@@ -412,8 +408,6 @@ describe('GET /api/articles (queries)', () => {
   });
 })
 
-
-
 describe('/api/articles/:article_id (comment count)', () => {
   test('200 - returns article with comment count included ', () => {
     return request(app)
@@ -427,7 +421,6 @@ describe('/api/articles/:article_id (comment count)', () => {
   })
   });
 })
-
 
 describe('DELETE /api/comments/:comment_id', () => {
   test('204 - comment deleted and no content returned ', () => {
@@ -764,4 +757,58 @@ describe('GET /api/articles/:article_id/comments (pagination)', () => {
       expect(body.msg).toBe('invalid page query')
     })
   })
+})
+
+describe('POST /api/topics', () => {
+  test('200 - adds new topic, returns topic', ()=> {
+    return request(app)
+    .post('/api/topics')
+    .send({
+      slug: "topical",
+      description: "welcome to the top"
+    })
+    .expect(201)
+    .then(({body}) => {
+      expect(body.topic).toEqual({  
+      slug: "topical",
+      description: "welcome to the top"})
+    })
+  })
+  test('422 - invalid input', () => {
+    return request(app)
+    .post('/api/topics')
+    .send({
+      topic: 'topical',
+      description: "its topic time"
+    })
+    .expect(422)
+    .then(({body}) => {
+      expect(body.msg).toBe('invalid user input')
+    })
+  } )
+})
+
+describe(' DELETE /api/articles/:article_id', () => {
+  test('204 - deletes article', () => {
+    return request(app)
+    .delete('/api/articles/4')
+    .expect(204)
+  });
+  test('404 - valid but non-existent article id', () => {
+    return request(app)
+    .delete('/api/articles/1000')
+    .expect(404)
+    .then(({body})=> {
+      expect(body.msg).toBe('article not found')
+    })
+  })
+  test('400 - invalid article id', () => {
+    return request(app)
+    .delete('/api/articles/invalid')
+    .expect(400)
+    .then(({body})=> {
+      expect(body.msg).toBe('bad request')
+    })
+  })
+
 })

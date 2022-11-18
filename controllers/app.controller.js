@@ -1,126 +1,120 @@
 const express = require("express");
 const articles = require("../db/data/test-data/articles");
-const { fetchTopics, fetchArticles, fetchArticleById, insertCommentByArticleId, fetchCommentsByArticleId, changeArticleById, fetchUsers, removeCommentById, fetchUserByUsername, changeCommentById, insertArticle } = require("../models/app.model");
+const { fetchTopics, fetchArticles, fetchArticleById, insertCommentByArticleId, fetchCommentsByArticleId, changeArticleById, fetchUsers, removeCommentById, fetchUserByUsername, changeCommentById, insertArticle, insertTopic, removeArticleById } = require("../models/app.model");
 const {readFile} = require('fs/promises')
-exports.getTopics = (req, res, next) => {
-    const topic = req.query.topic
-    fetchTopics(topic).then((topics) => {
-        res.status(200).send({topics})
-    })
-    .catch((err) => {
-        next(err)
-    })
-}
 
-exports.getArticles = (req, res, next) => {
-    const limit = req.query.limit
-    const topic = req.query.topic
-    const sortBy = req.query.sortby
-    const order = req.query.order
-    const page = req.query.p
-
-    const promise1 = fetchTopics(topic)
-    const promise2 = fetchArticles(topic, sortBy, order, limit, page)
-
-    Promise.all([promise1, promise2]).then((results) => {
-        const articles = results[1]
-        res.status(200).send({articles})
-    })
-    .catch((err) => {
-        next(err)
-    })
-}
-
-exports.getArticleById = (req, res, next) => {
-    const articleId = req.params.article_id
-        fetchArticleById(articleId).then((article) => {
-           res.status(200).send({article})
-        })
-        .catch((err) => {
-            next(err)
-        })
+exports.getTopics = async (req, res, next) => {
+    try {
+        const topic = req.query.topic
+        const topics = await fetchTopics(topic)
+        res.status(200).send({topics})    
+    } catch (error) {
+        next(error)
     }
+}
 
-exports.getCommentsByArticleId = (req, res, next) => {
-    const article_id = req.params.article_id
-    const limit = req.query.limit
-    const page = req.query.p
-    const promise1 = fetchArticleById(article_id)
-    const promise2 = fetchCommentsByArticleId(article_id, limit, page)
+exports.getArticles = async (req, res, next) => {
+    try {
+        const limit = req.query.limit
+        const topic = req.query.topic
+        const sortBy = req.query.sortby
+        const order = req.query.order
+        const page = req.query.p
     
-    Promise.all([promise1 , promise2])
-    .then((results) => {
-        let comments = results[1]
-        res.status(200).send({comments})
-    }).catch((err)=> {
-        next(err)
-    })
+        await fetchTopics(topic)
+        const articles = await fetchArticles(topic, sortBy, order, limit, page)   
+        res.status(200).send({articles})
+    } catch (error) {
+        next(error)
+    }
 }
 
-
-exports.postCommentByArticleId = (req, res, next) => {
+exports.getArticleById = async (req, res, next) => {
+    try {
     const articleId = req.params.article_id
-    const newComment = req.body
-    const promise1 = fetchArticleById(articleId)
-    const promise2 = insertCommentByArticleId(articleId, newComment)
+    const article = await fetchArticleById(articleId)
+    res.status(200).send({article})       
+    } catch (error) {
+        next(error)
+    }  
+ }
 
-    Promise.all([promise1,promise2]).then((results) => {
-        const comment = results[1]
-        res.status(201).send({comment})
-    }).catch((err) => {
-        next(err)
-    })
+exports.getCommentsByArticleId = async (req, res, next) => {
+    try {
+        const article_id = req.params.article_id
+        const limit = req.query.limit
+        const page = req.query.p
+        await fetchArticleById(article_id)
+        const comments = await fetchCommentsByArticleId(article_id, limit, page)
+        res.status(200).send({comments})     
+    } catch (error) {
+        next(error)
+    }
 }
 
-exports.patchArticleById = (req,res,next) => {
-    const articleId = req.params.article_id
-    const voteChange = req.body.inc_votes
+exports.postCommentByArticleId = async(req, res, next) => {
+    try {
+        const articleId = req.params.article_id
+        const newComment = req.body
+        await fetchArticleById(articleId)
+        const comment = await insertCommentByArticleId(articleId, newComment)
+        res.status(201).send({comment})   
+    } catch (error) {
+        next(error)
+    }
+}
 
-    const promise1 = fetchArticleById(articleId)
-    const promise2 = changeArticleById(articleId, voteChange)
-
-    Promise.all([promise1, promise2]).then((results)=> {
-        const article = results[1]
+exports.patchArticleById = async (req,res,next) => {
+    try {
+        const articleId = req.params.article_id
+        const voteChange = req.body.inc_votes
+        await fetchArticleById(articleId)
+        const article = await changeArticleById(articleId, voteChange)
         res.status(200).send({article})
-    }).catch((err) => {
-        next(err)
-    })
+        
+    } catch (error) {
+        next(error)
+    }
 } 
 
-exports.getUsers = (req, res, next) => {
-    fetchUsers().then((users) => {
-        res.status(200).send({users})
-    }).catch((err)=> {
-        next(err)
-    })
+exports.getUsers = async (req, res, next) => {
+    try {
+        const users = await fetchUsers()
+            res.status(200).send({users})
+    } catch (error) {
+        next(error)
+    }
 }
 
-//ticket 11
- exports.deleteCommentById = (req,res,next) => {
-    const commentId = req.params.comment_id
-    removeCommentById(commentId).then(()=> {
-        res.status(204).send()
-    }).catch((err) => {
-        next(err)
-    })
+ exports.deleteCommentById = async (req,res,next) => {
+    try {
+        const commentId = req.params.comment_id
+       await removeCommentById(commentId)
+            res.status(204).send()   
+    } catch (error) {
+        next(error)
+    }
  }
 
- exports.getEndpoints = (req, res, next) => {
-    readFile('endpoints.json').then((foundEndpoints)=> {
-        const endpoints = JSON.parse(foundEndpoints)   
-        res.status(200).send({endpoints})
-    }).catch((err) => {
-        next(err)
-    })
+ exports.getEndpoints = async (req, res, next) => {
+    try {
+      const foundEndpoints = await readFile('endpoints.json')
+            const endpoints = JSON.parse(foundEndpoints)   
+            res.status(200).send({endpoints})
+        
+    } catch (error) {
+        next(error)
+    }
  }
 
- exports.getUserByUsername = (req, res, next) => {
-    const username = req.params.username
-    fetchUserByUsername(username).then((user) => {
-        res.status(200).send({user})
-    }).catch((err) => {
-        next(err)
-    })
+ exports.getUserByUsername = async (req, res, next) => {
+    try {
+        const username = req.params.username
+        const user = await fetchUserByUsername(username)
+            res.status(200).send({user}) 
+    } catch (error) {
+        next(error)
+    }
  }
 
  exports.patchCommentById = async (req, res, next) => {
@@ -144,6 +138,27 @@ exports.getUsers = (req, res, next) => {
         const createdArticleId = await insertArticle(newArticle)
         const article = await fetchArticleById(createdArticleId)
         res.status(201).send({article})
+    } catch (err) {
+        next(err)
+    }
+ }
+
+ exports.postTopic = async(req,res,next) => {
+    try {
+        const newTopic = req.body
+        const topic = await insertTopic(newTopic)
+        res.status(201).send({topic})
+    } catch (err) {
+        next(err)
+    }
+ }
+
+ exports.deleteArticleById = async (req,res,next) => {
+    try {
+        const articleId = req.params.article_id
+        await fetchArticleById(articleId)
+        await removeArticleById(articleId)
+        res.status(204).send()
     } catch (err) {
         next(err)
     }
