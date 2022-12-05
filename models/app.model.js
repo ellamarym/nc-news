@@ -1,4 +1,4 @@
-const d = require('d')
+
 const { checkArticleExists, checkCommentExists, countArticles } = require('../db/apputils')
 const db = require('../db/connection')
 const articles = require('../db/data/test-data/articles')
