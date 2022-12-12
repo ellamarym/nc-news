@@ -1,5 +1,4 @@
-const express = require("express");
-const articles = require("../db/data/test-data/articles");
+
 const { fetchTopics, fetchArticles, fetchArticleById, insertCommentByArticleId, fetchCommentsByArticleId, changeArticleById, fetchUsers, removeCommentById, fetchUserByUsername, changeCommentById, insertArticle, insertTopic, removeArticleById } = require("../models/app.model");
 const {readFile} = require('fs/promises')
 

@@ -1,7 +1,6 @@
 
-const { checkArticleExists, checkCommentExists, countArticles } = require('../db/apputils')
+const {  checkCommentExists } = require('../db/apputils')
 const db = require('../db/connection')
-const articles = require('../db/data/test-data/articles')
 
 exports.fetchTopics = async (topic) => {
     const queryValues = []
